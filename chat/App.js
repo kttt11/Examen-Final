@@ -1,21 +1,27 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import Chatbot from './src/Chatbot';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import AppNavigator from './AppNavigator';
+import SplashScreenComponent from './src/SplashScreenComponent';
 
-const App = () => {
+
+const Stack = createStackNavigator();
+
+export default function App() {
   return (
-    <View style={styles.container}>
-      <Chatbot />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Splash">
+        <Stack.Screen
+          name="Splash"
+          component={SplashScreenComponent}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AppNavigator"
+          component={AppNavigator}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-    justifyContent: 'flex-end',
-  },
-});
-
-export default App;
+}
