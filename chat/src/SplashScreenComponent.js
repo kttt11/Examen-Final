@@ -10,21 +10,21 @@ export default function SplashScreenComponent() {
 
   useEffect(() => {
     async function loadApp() {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 8000));
       Splash.hideAsync();
-      navigation.replace('AppNavigator');
+      navigation.replace('chatbot');
     }
     loadApp();
   }, [navigation]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido</Text>
+      
       <Image
-        source={require("../assets/songam.png")}
+        source={require("../assets/cne.png")}
         style={styles.image}
       />
-      <Text style={styles.loadingText}>LOADING...</Text>
+      
     </View>
   );
 }
@@ -42,8 +42,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     marginTop: 20,
   },
   loadingText: {

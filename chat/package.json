@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@clickhouse/client": "^1.10.1",
     "@expo/metro-runtime": "~4.0.1",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
@@ -27,6 +28,7 @@
     "expo-splash-screen": "~0.29.22",
     "expo-status-bar": "~2.0.1",
     "express": "^4.21.2",
+    "langchain": "^0.3.19",
     "multer": "^1.4.5-lts.1",
     "openai": "^4.85.4",
     "react": "18.3.1",
@@ -34,6 +36,7 @@
     "react-native": "0.76.7",
     "react-native-chart-kit": "^6.12.0",
     "react-native-dotenv": "^3.4.11",
+    "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "^2.24.0",
     "react-native-reanimated": "^3.17.0",
     "react-native-safe-area-context": "^5.2.0",
@@ -45,7 +48,10 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@types/node": "^22.13.5",
+    "@types/react": "~18.3.12",
+    "typescript": "^5.7.3"
   },
   "private": true
 }

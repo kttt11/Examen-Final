@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Button, FlatList, TextInput, StyleSheet } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
@@ -14,12 +14,20 @@ const Chatbot = () => {
       {
         data: [],
         colors: [(opacity) => `rgba(134, 65, 244, ${opacity})`],
-        label: 'Datos',
+        label: 'Votos',
       },
     ],
   });
   const [prompt, setPrompt] = useState('');
   const [resumen, setResumen] = useState('');
+  const flatListRef = useRef(null);
+
+  useEffect(() => {
+    // Desplaza al último elemento cada vez que se actualiza la lista de datos
+    if (data.length > 0 && flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
+  }, [data]);
 
   const handleFilePick = async () => {
     try {
@@ -56,14 +64,32 @@ const Chatbot = () => {
 
       setData(jsonData.slice(0, 5));
 
-      const tipoMuerteCounts = {};
+      // Contar votos basados en keywords
+      const votos = {
+        Luisa: 0,
+        Noboa: 0,
+        Nulos: 0,
+      };
+
       jsonData.forEach((item) => {
-        const tipo = item.tipo_muerrte || 'N/A';
-        tipoMuerteCounts[tipo] = (tipoMuerteCounts[tipo] || 0) + 1;
+        const keyword = (item.keywords || '').toLowerCase();
+        const verb = (item.verbs || '').toLowerCase();
+        const text = (item.text || '').toLowerCase();
+
+        if (keyword.includes('luisa') || text.includes('luisa') || verb.includes('luisa')) {
+          votos.Luisa++;
+        }
+        if (keyword.includes('noboa') || text.includes('noboa') || verb.includes('noboa')) {
+          votos.Noboa++;
+        }
+        if (keyword.includes('nulo') || text.includes('nulo') || verb.includes('nulo')) {
+          votos.Nulos++;
+        }
       });
 
-      const labels = Object.keys(tipoMuerteCounts);
-      const values = Object.values(tipoMuerteCounts);
+      // Crear gráfica
+      const labels = Object.keys(votos);
+      const values = Object.values(votos);
 
       setChartData({
         labels,
@@ -71,28 +97,18 @@ const Chatbot = () => {
           {
             data: values,
             colors: [(opacity) => `rgba(134, 65, 244, ${opacity})`],
-            label: 'Tipos de Muerte',
+            label: 'Votos',
           },
         ],
       });
 
-      const resultadosProcesados = procesarArchivoConPrompt(jsonData, prompt);
-      setResumen(resultadosProcesados);
-      console.log('Resultados procesados:', resultadosProcesados);
+      // Crear resumen
+      const resumen = `Resultados del análisis:\n- Votos para Luisa: ${votos.Luisa}\n- Votos para Noboa: ${votos.Noboa}\n- Votos Nulos: ${votos.Nulos}`;
+      setResumen(resumen);
+
+      console.log('Resultados procesados:', resumen);
     } catch (error) {
       console.error('Error al procesar el archivo:', error);
-    }
-  };
-
-  const procesarArchivoConPrompt = (jsonData, prompt) => {
-    if (prompt.toLowerCase().includes('resumen') && prompt.toLowerCase().includes('gráfica')) {
-      const resumen = `El archivo contiene ${jsonData.length} registros. Los tipos de muerte más comunes son: ${Object.keys(jsonData.reduce((acc, curr) => {
-        acc[curr.tipo_muerrte] = (acc[curr.tipo_muerrte] || 0) + 1;
-        return acc;
-      }, {})).join(', ')}`;
-      return resumen;
-    } else {
-      return 'No se encontró un resumen adecuado para el prompt.';
     }
   };
 
@@ -107,6 +123,7 @@ const Chatbot = () => {
   };
 
   return (
+    
     <View style={styles.container}>
       <Text style={styles.titulo}>Chatbot para Procesar Archivos Excel</Text>
       <Button title="Subir Archivo Excel" onPress={handleFilePick} style={styles.boton} />
@@ -121,13 +138,13 @@ const Chatbot = () => {
         <View style={styles.resultados}>
           <Text style={styles.etiqueta}>Datos del archivo:</Text>
           <FlatList
+            ref={flatListRef}
             data={data}
             renderItem={({ item }) => (
               <View style={styles.fila}>
-                <Text>{`Tipo: ${item.tipo_muerrte || 'N/A'}`}</Text>
-                <Text>{`Zona: ${item.zona || 'N/A'}`}</Text>
-                <Text>{`Subzona: ${item.subzona || 'N/A'}`}</Text>
-                <Text>{`Distrito: ${item.distrito || 'N/A'}`}</Text>
+                <Text>{`Text: ${item.text || 'N/A'}`}</Text>
+                <Text>{`Keywords: ${item.keywords || 'N/A'}`}</Text>
+                <Text>{`Verbs: ${item.verbs || 'N/A'}`}</Text>
               </View>
             )}
             keyExtractor={(item, index) => index.toString()}
